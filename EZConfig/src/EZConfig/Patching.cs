@@ -1,46 +1,68 @@
 ﻿using HarmonyLib;
 using System.Linq;
-using UnityEngine;
-using Zorro.UI;
-using static EZConfig.Extensions;
+using Object = UnityEngine.Object;
 
-namespace EZConfig
+namespace EZConfig;
+
+internal static class Patching
 {
+    internal static void Initialize()
+    {
+        Plugin.WARNING("Initializing patches");
+
+        var harmony = new Harmony("ezconfig");
+        harmony.PatchAll(typeof(Patching).Assembly);
+
+        Plugin.WARNING("Patches applied");
+    }
 
     [HarmonyPatch(typeof(SettingsTABS), "OnSelected")]
     public class TabSelectOverride
     {
         public static bool Prefix(SettingsTABS __instance, SettingsTABSButton button)
         {
-            ShowSettingsExtended(__instance.SettingsMenu, button.name);
+            Extensions.ShowSettingsExtended(__instance.SettingsMenu, button.name);
             return false;
         }
     }
 
-    [HarmonyPatch(typeof(GameHandler), "Awake")]
-    public class InitModdedMenus
+    [HarmonyPatch(typeof(PauseOptionsMenu), nameof(PauseOptionsMenu.Initialize))]
+    public class PauseOptionsMenu_OnOpen
     {
-        public static void Postfix()
+        public static bool Prefix(PauseOptionsMenu __instance)
         {
-            ControlSettings.InitControls();
+            var transform = __instance.transform.Find("MainPage/Options");
+            if (transform != null)
+                MenuAPI.pauseMenuBuilderDelegate?.Invoke(transform);
+
+            return true;
         }
     }
 
     //SharedSettingsMenu Awake postfix
-    [HarmonyPatch(typeof(SharedSettingsMenu), "OnEnable")]
+    [HarmonyPatch(typeof(SharedSettingsMenu), nameof(SharedSettingsMenu.RefreshSettings))]
     public class AddMenusPatch
     {
-        public static void Prefix(SharedSettingsMenu __instance)
+        public static bool Prefix(SharedSettingsMenu __instance)
         {
-            Plugin.Spam("Enabling disabled tabs!!!");
-            __instance.m_tabs.buttons.DoIf(b => !b.gameObject.activeSelf, b => 
+            // Mods tab have been created already
+            foreach(var tabName in MenuAPI.CustomTabs)
             {
-                b.gameObject.SetActive(true);
-                ControlsTab = b.gameObject;
-                GameObject Mods = GameObject.Instantiate(b.gameObject, b.gameObject.transform.parent);
-                Mods.name = "Mods";
-                Mods.GetComponent<SettingsTABSButton>().text.text = "Mods";
-            });
+                if (__instance.m_tabs.buttons.Any(x => x.name == tabName)) continue;
+
+                if (__instance.m_tabs.buttons.Count > 0)
+                {
+                    var template = __instance.m_tabs.buttons[0];
+
+                    var customTab = Object.Instantiate(template.gameObject, template.gameObject.transform.parent).GetComponent<SettingsTABSButton>();
+
+                    customTab.name = customTab.text.text = tabName;
+                    customTab.gameObject.SetActive(true);
+                    __instance.m_tabs.buttons.Add(customTab);
+                }
+            }
+
+            return true;
         }
     }
 }
