@@ -2,7 +2,6 @@
 using EZConfig.UI;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -10,7 +9,7 @@ namespace EZConfig
 {
     public static class MenuAPI
     {
-        internal static BuilderDelegate pauseMenuBuilderDelegate;
+        internal static BuilderDelegate? pauseMenuBuilderDelegate;
         public delegate void BuilderDelegate(Transform parent);
 
         public static void AddElementToPauseMenu(BuilderDelegate builderDelegate) => pauseMenuBuilderDelegate += builderDelegate;
@@ -26,7 +25,7 @@ namespace EZConfig
                 CustomTabs.Add(tabName);
         }
 
-        public static void AddBoolToTab(string displayName, bool defaultValue, string tabName)
+        public static void AddTextToTab(string displayName, string tabName)
         {
             if (SettingsHandler.Instance == null)
             {
@@ -34,11 +33,22 @@ namespace EZConfig
                 return;
             }
 
-            SettingsHandler.Instance.AddSetting(new BepInExOffOn(displayName, defaultValue, tabName));
+            SettingsHandler.Instance.AddSetting(new BepInExHeader(displayName, tabName));
+        }
+
+        public static void AddBoolToTab(string displayName, bool defaultValue, string tabName, bool currentValue = false, Action<bool>? saveCallback = null)
+        {
+            if (SettingsHandler.Instance == null)
+            {
+                Plugin.Log.LogError("You're registering options too early! Use the Start() function to create new options!");
+                return;
+            }
+
+            SettingsHandler.Instance.AddSetting(new BepInExOffOn(displayName, defaultValue, tabName, currentValue, saveCallback));
         }
 
         public static void AddFloatToTab(string displayName, float defaultValue,
-            string tabName, float minValue = 0f, float maxValue = 1f)
+            string tabName, float minValue = 0f, float maxValue = 1f, float currentValue = 0f, Action<float>? applyCallback = null)
         {
             if (SettingsHandler.Instance == null)
             {
@@ -46,7 +56,18 @@ namespace EZConfig
                 return;
             }
 
-            SettingsHandler.Instance.AddSetting(new BepInExFloat(displayName, defaultValue, tabName, minValue, maxValue));
+            SettingsHandler.Instance.AddSetting(new BepInExFloat(displayName, defaultValue, tabName, minValue, maxValue, currentValue, applyCallback));
+        }
+
+        public static void AddIntToTab(string displayName, int defaultValue, string tabName, int currentValue = 0, Action<int>? saveCallback = null)
+        {
+            if (SettingsHandler.Instance == null)
+            {
+                Plugin.Log.LogError("You're registering options too early! Use the Start() function to create new options!");
+                return;
+            }
+
+            SettingsHandler.Instance.AddSetting(new BepInExInt(displayName, tabName, defaultValue, currentValue, saveCallback));
         }
         #endregion
 

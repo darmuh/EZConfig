@@ -34,15 +34,11 @@ public partial class Plugin : BaseUnityPlugin
         AddModSettings();
 
         MenuAPI.AddElementToPauseMenu(x =>
-        {
-            var button = MenuAPI.CreatePauseMenuButton("Test");
-            if (button != null)
-            {
-                button.SetColor(Color.cyan);
-                button.SetBorderColor(Color.red);
-                button.transform.SetParent(x);
-            }
-        });
+            MenuAPI.CreatePauseMenuButton("Test")?
+            .SetColor(Color.cyan)
+            .SetBorderColor(Color.red)
+            .SetParent(x)
+        );
     }
 
     internal static void Spam(string message)
@@ -71,22 +67,30 @@ public partial class Plugin : BaseUnityPlugin
 
         foreach (var (modName, configEntryBases) in GetModConfigEntries())
         {
+            MenuAPI.AddTextToTab(modName, "Mods");
             foreach (var configEntry in configEntryBases)
             {
                 try
                 {
                     if (configEntry.SettingType == typeof(bool))
                     {
-                        var defaultValue = configEntry.DefaultValue is bool value && value;
-                        MenuAPI.AddBoolToTab(modName, defaultValue, "Mods");
+                        var defaultValue = configEntry.DefaultValue is bool dValue && dValue;
+                        var currentValue = configEntry.BoxedValue is bool bValue && bValue;
+
+                        MenuAPI.AddBoolToTab(configEntry.Definition.Key, defaultValue, "Mods", currentValue, newVal => configEntry.BoxedValue = newVal);
                     }
                     else if (configEntry.SettingType == typeof(float))
                     {
-                        var defaultValue = configEntry.DefaultValue is float value ? value : 0f;
-                        MenuAPI.AddFloatToTab($"{modName} - {configEntry.Definition.Key}", defaultValue, "Mods");
+                        var defaultValue = configEntry.DefaultValue is float cValue ? cValue : 0f;
+                        var currentValue = configEntry.BoxedValue is float bValue ? bValue : 0f;
+
+                        MenuAPI.AddFloatToTab(configEntry.Definition.Key, defaultValue, "Mods", 0f, 1000f, currentValue, newVal => configEntry.BoxedValue = newVal);
                     }
                     else if (configEntry.SettingType == typeof(int))
                     {
+                        var defaultValue = configEntry.DefaultValue is int cValue ? cValue : 0;
+                        var currentValue = configEntry.BoxedValue is int bValue ? bValue : 0;
+                        MenuAPI.AddIntToTab(configEntry.Definition.Key, defaultValue, "Mods", currentValue, newVal => configEntry.BoxedValue = newVal);
                         // We need to create a IntSetting
                     }
                     else // Warn about missing SettingTypes

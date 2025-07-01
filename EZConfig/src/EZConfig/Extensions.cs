@@ -21,15 +21,14 @@ public class Extensions
         }
 
         foreach (SettingsUICell spawnedCell in sharedSettings.m_spawnedCells)
-        {
             Object.Destroy(spawnedCell.gameObject);
-        }
+        
 
         sharedSettings.m_spawnedCells.Clear();
         sharedSettings.RefreshSettings();
         foreach (IExposedSetting item in from setting in sharedSettings.settings
                                          where setting.GetCategory() == categoryName
-                                         where !(setting is IConditionalSetting conditionalSetting) || conditionalSetting.ShouldShow()
+                                         where setting is not IConditionalSetting conditionalSetting || conditionalSetting.ShouldShow()
                                          select setting)
         {
             if (item == null || item is not Setting setting || setting.GetSettingUICell() == null)
