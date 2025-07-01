@@ -91,7 +91,12 @@ public partial class Plugin : BaseUnityPlugin
                         var defaultValue = configEntry.DefaultValue is int cValue ? cValue : 0;
                         var currentValue = configEntry.BoxedValue is int bValue ? bValue : 0;
                         MenuAPI.AddIntToTab(configEntry.Definition.Key, defaultValue, "Mods", currentValue, newVal => configEntry.BoxedValue = newVal);
-                        // We need to create a IntSetting
+                    }
+                    else if (configEntry.SettingType == typeof(string))
+                    {
+                        var defaultValue = configEntry.DefaultValue is string cValue ? cValue : "";
+                        var currentValue = configEntry.BoxedValue is string bValue ? bValue : "";
+                        MenuAPI.AddStringToTab(configEntry.Definition.Key, defaultValue, "Mods", currentValue, newVal => configEntry.BoxedValue = newVal);
                     }
                     else // Warn about missing SettingTypes
                         WARNING($"{modName} - {configEntry.Definition.Key} - {configEntry.SettingType}");

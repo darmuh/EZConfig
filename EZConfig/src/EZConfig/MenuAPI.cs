@@ -69,6 +69,17 @@ namespace EZConfig
 
             SettingsHandler.Instance.AddSetting(new BepInExInt(displayName, tabName, defaultValue, currentValue, saveCallback));
         }
+
+        public static void AddStringToTab(string displayName, string defaultValue, string tabName, string currentValue = "", Action<string>? saveCallback = null)
+        {
+            if (SettingsHandler.Instance == null)
+            {
+                Plugin.Log.LogError("You're registering options too early! Use the Start() function to create new options!");
+                return;
+            }
+
+            SettingsHandler.Instance.AddSetting(new BepInExString(displayName, tabName, defaultValue, currentValue, saveCallback));
+        }
         #endregion
 
 
