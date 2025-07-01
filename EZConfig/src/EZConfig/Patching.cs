@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 using System.Linq;
+using UnityEngine;
+using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
 namespace EZConfig;
@@ -45,6 +47,25 @@ internal static class Patching
     {
         public static bool Prefix(SharedSettingsMenu __instance)
         {
+            var target = __instance.m_settingsContentParent.parent;
+            var content = __instance.m_settingsContentParent;
+            if (content != null && target.GetComponent<ScrollRect>() == null)
+            {
+                if (content.GetComponent<ContentSizeFitter>() == null)
+                {
+                    var contentSizeFitter = content.gameObject.AddComponent<ContentSizeFitter>();
+                    contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+                }
+
+                target.gameObject.AddComponent<RectMask2D>();
+                var scrollRect = target.gameObject.AddComponent<ScrollRect>();
+                scrollRect.content = content.GetComponent<RectTransform>();
+                scrollRect.content.pivot = new Vector2(0.5f, 1f);
+                scrollRect.horizontal = false;
+                scrollRect.movementType = ScrollRect.MovementType.Clamped;
+                scrollRect.scrollSensitivity = 50;
+            }
+
             // Mods tab have been created already
             foreach(var tabName in MenuAPI.CustomTabs)
             {

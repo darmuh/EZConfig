@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,27 +21,41 @@ public class PauseMenuButton : MonoBehaviour
         Glow = transform.Find("Glow").gameObject;
         Text = transform.Find("Text").GetComponent<TextMeshProUGUI>();
 
-        BorderTop = BorderTop.transform.Find("Border").gameObject;
+        // There are two objects named "Border" so we need to do this hack to get the bottom one
+        BorderTop = BorderTop.transform.Find("Border").gameObject; 
         BorderBottom = transform.GetChild(BorderTop.transform.GetSiblingIndex() + 1).gameObject;
-
     }
 
-    public void SetText(string text)
+    public PauseMenuButton SetText(string text)
     {
         if (Text != null) Text.text = text;
+
+        return this;
     }
 
-    public void SetColor(Color color)
+    public PauseMenuButton SetColor(Color color)
     {
         if (Panel != null) Panel.color = color;
+
+        return this;
     }
 
-    public void SetBorderColor(Color color)
+    public PauseMenuButton SetBorderColor(Color color)
     {
         if (BorderTop != null && BorderBottom != null)
         {
             BorderTop.GetComponent<Image>().color = color;
             BorderBottom.GetComponent<Image>().color = color;
         }
+
+        return this;
+    }
+
+
+    public PauseMenuButton SetParent(Transform parent)
+    {
+        transform.SetParent(parent);
+
+        return this;
     }
 }
