@@ -1,8 +1,5 @@
-﻿using TMPro;
-using UnityEngine;
-using UnityEngine.InputSystem;
+﻿using UnityEngine.InputSystem;
 using Zorro.Settings;
-using Zorro.Settings.UI;
 
 namespace EZConfig;
 
@@ -10,29 +7,6 @@ public class KeybindSetting(InputAction action, int bindIndex) : StringSetting, 
 {
     public InputAction inputAction = action;
     public int bindingIndex = bindIndex;
-
-    public override GameObject GetSettingUICell()
-    {
-        if(Extensions.StringPrefab == null)
-        {
-            Extensions.StringPrefab = Object.Instantiate(InputCellMapper.Instance.FloatSettingCell);
-            Extensions.StringPrefab.name = "ModdedStringUI";
-            FloatSettingUI fsetting = Extensions.StringPrefab.GetComponentInChildren<FloatSettingUI>();
-            Object.Destroy(fsetting.slider.gameObject);
-            Object.Destroy(fsetting);
-            TMP_InputField inputField = Extensions.StringPrefab.GetComponentInChildren<TMP_InputField>();
-            inputField.contentType = TMP_InputField.ContentType.Standard;
-            RectTransform rect = inputField.gameObject.GetComponent<RectTransform>();
-            rect.sizeDelta = new(350, 50);
-            rect.localPosition = Vector3.zero;
-            StringSettingUI stringUI = inputField.gameObject.AddComponent<StringSettingUI>();
-            stringUI.inputField = inputField;
-            //TextMeshProUGUI text = inputField.gameObject.GetComponentInChildren<TextMeshProUGUI>();
-            //text.gameObject.AddComponent<StringSettingUI>();
-        }
-        
-        return Extensions.StringPrefab;
-    }
 
     public void Submit(string value)
     {

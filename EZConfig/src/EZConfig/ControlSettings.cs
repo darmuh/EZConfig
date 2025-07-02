@@ -13,7 +13,7 @@ internal class ControlSettings
             return;
         Plugin.Spam("initializing controls!");
         timesRan = 0;
-        //CreateSettingForEachBinding(InputSystem.actions.FindAction("Move"));
+        CreateSettingForEachBinding(InputSystem.actions.FindAction("Move"));
         
         CreateSettingForEachBinding(InputSystem.actions.FindAction("Crouch"));
         CreateSettingForEachBinding(InputSystem.actions.FindAction("Drop"));

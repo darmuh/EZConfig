@@ -1,6 +1,9 @@
-﻿using System.Linq;
+﻿using EZConfig.UI;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Zorro.Settings;
+using static EZConfig.Patching;
 using Object = UnityEngine.Object;
 
 namespace EZConfig;
@@ -8,8 +11,14 @@ namespace EZConfig;
 public class Extensions
 {
     //public static SharedSettingsMenu SharedSettings = null!;
+    public static GameObject ModMenuPrefab = null!;
     public static GameObject ControlsTab = null!;
     public static GameObject StringPrefab = null!;
+    public static GameObject IntPrefab = null!;
+    public static GameObject ButtonPrefab = null!;
+    //public static GameObject SelectedGraphic = null!;
+    public static GameObject ModSettingsPage = null!;
+    internal static ModMenuWindow SharedModMenu = null!;
 
     public static void ShowSettingsExtended(SharedSettingsMenu sharedSettings, string categoryName)
     {
@@ -45,6 +54,11 @@ public class Extensions
         }
 
         sharedSettings.m_fadeInCoroutine = sharedSettings.StartCoroutine(sharedSettings.FadeInCells());
+
+        if (AddMenusPatch.scroller == null)
+            return;
+
+        AddMenusPatch.scroller.normalizedPosition = Vector3.zero;
     }
 
     //public static SettingsTABSExtended ExtendedTabs { get; internal set; }
