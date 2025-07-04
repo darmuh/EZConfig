@@ -20,9 +20,6 @@ public class PeakTabContent : PeakElement
         ScrollRect.horizontal = false;
         ScrollRect.movementType = ScrollRect.MovementType.Clamped;
 
-        RectTransform.anchoredPosition = new Vector2(0, 0);
-        RectTransform.pivot = new Vector2(0f, 0f);
-
         UIUtilities.ExpandToParent(RectTransform);
 
         RectTransform.offsetMax = new Vector2(0, -60f);

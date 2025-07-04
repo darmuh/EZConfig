@@ -79,6 +79,8 @@ internal static class PeakTemplates
                 Object.DontDestroyOnLoad(ButtonTemplate);
             }
 
+            MenuAPI.mainMenuBuilderDelegate?.Invoke(menu.playWithFriendsButton.transform.parent);
+
             return true;
         }
     }

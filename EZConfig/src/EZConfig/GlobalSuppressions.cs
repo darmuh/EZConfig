@@ -10,6 +10,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("CodeQuality", "IDE0051", Justification = "Used by Unity", Scope = "member", Target = "~M:EZConfig.UI.PeakText.Awake")]
 [assembly: SuppressMessage("CodeQuality", "IDE0051", Justification = "Used by Unity", Scope = "member", Target = "~M:EZConfig.UI.PeakHorizontalTabs.Awake")]
 [assembly: SuppressMessage("CodeQuality", "IDE0051", Justification = "Used by Unity", Scope = "member", Target = "~M:EZConfig.UI.PeakTabContent.Awake")]
-
-
-[assembly: SuppressMessage("CodeQuality", "IDE0051", Justification = "Used by Unity", Scope = "member", Target = "~M:EZConfig.Components.SettingsTABSButton.Update")]
+[assembly: SuppressMessage("CodeQuality", "IDE0051", Justification = "Used by Unity", Scope = "member", Target = "~M:EZConfig.UI.PeakElement.Awake")]

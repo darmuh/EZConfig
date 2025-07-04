@@ -25,7 +25,7 @@ public class PeakHorizontalTabs : PeakElement
 
         var contentObj = new GameObject("Content", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(ContentSizeFitter));
         Content = contentObj.GetComponent<RectTransform>();
-        Content.parent = transform;
+        Content.SetParent(transform, false);
         Content.pivot = Vector2.zero;
         UIUtilities.ExpandToParent(Content);
 

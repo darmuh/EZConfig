@@ -9,9 +9,10 @@ namespace EZConfig
 {
     public static class MenuAPI
     {
-        internal static BuilderDelegate? pauseMenuBuilderDelegate, createPagesBuilderDelegate;
+        internal static BuilderDelegate? pauseMenuBuilderDelegate, mainMenuBuilderDelegate;
         public delegate void BuilderDelegate(Transform parent);
 
+        public static void AddElementToMainMenu(BuilderDelegate builderDelegate) => mainMenuBuilderDelegate += builderDelegate;
         public static void AddElementToPauseMenu(BuilderDelegate builderDelegate) => pauseMenuBuilderDelegate += builderDelegate;
 
         // Tabs 

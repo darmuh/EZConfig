@@ -34,48 +34,44 @@ public partial class Plugin : BaseUnityPlugin
 
     private void Start()
     {
+        // Create entries for all loaded mods
         AddModSettings();
 
         void builderDelegate(Transform parent)
         {
-            var myPage = MenuAPI.CreatePage("ModSettings").CreateBackground();
+            var modSettingsPage = MenuAPI.CreatePage("ModSettings").CreateBackground();
 
             var newText = MenuAPI.CreateText("Mod Settings", "Header")
                 .SetFontSize(48)
-                .ParentTo(myPage.transform)
+                .ParentTo(modSettingsPage.transform)
                 .SetPosition(new Vector2(100f, -60f));
 
             var backButton = MenuAPI.CreateMenuButton("Back")?
                 .SetColor(new Color(1, 0.5f, 0.2f))
-                .ParentTo(myPage.transform)
+                .ParentTo(modSettingsPage.transform)
                 .SetPosition(new Vector2(230, -160))
                 .SetWidth(200)
-                .OnClick(() =>
-                {
-                    myPage.Close();
-                });
+                .OnClick(modSettingsPage.Close);
 
-            var content = new GameObject("Content", typeof(RectTransform));
-            content.transform.SetParent(myPage.transform, false);
-            var contentRectTransform = content.GetComponent<RectTransform>();
-            contentRectTransform.pivot = contentRectTransform.anchorMin = contentRectTransform.anchorMax = new Vector2(0, 1);
-            contentRectTransform.anchoredPosition = new Vector2(428, -70);
-            contentRectTransform.sizeDelta = new Vector2(1360, 980);
+            var content = new GameObject("Content")
+                .AddComponent<PeakElement>()
+                .ParentTo(modSettingsPage.transform)
+                .SetPivot(new Vector2(0, 1))
+                .SetAnchorMin(new Vector2(0, 1))
+                .SetAnchorMax(new Vector2(0, 1))
+                .SetPosition(new Vector2(428, -70))
+                .SetSize(new Vector2(1360, 980)).RectTransform;
 
-            var settingsMenu = content.AddComponent<ModdedSettingsMenu>();
+            var settingsMenu = content.gameObject.AddComponent<ModdedSettingsMenu>();
 
-            var tabsObject = new GameObject("TABS");
-            tabsObject.transform.SetParent(content.transform, false);
+            var horizontalTabs = new GameObject("TABS")
+                .ParentTo(content.transform)
+                .AddComponent<PeakHorizontalTabs>();
 
-            var horizontalTabs = tabsObject.AddComponent<PeakHorizontalTabs>();
-            var moddedSettingsTABS = tabsObject.AddComponent<ModdedSettingsTABS>();
+            var moddedSettingsTABS = horizontalTabs.gameObject.AddComponent<ModdedSettingsTABS>();
             moddedSettingsTABS.SettingsMenu = settingsMenu;
-
-
-            var tabContentObject = new GameObject("TabContent");
-            tabContentObject.transform.SetParent(content.transform, false);
-
-            var tabContent = tabContentObject.AddComponent<PeakTabContent>();
+            
+            var tabContent = new GameObject("TabContent").ParentTo(content.transform).AddComponent<PeakTabContent>();
 
             settingsMenu.ContentParent = tabContent.Content;
             settingsMenu.Tabs = moddedSettingsTABS;
@@ -87,17 +83,22 @@ public partial class Plugin : BaseUnityPlugin
             
             var pauseOptionsMenu = FindAnyObjectByType<PauseOptionsMenu>();
             var modSettingsButton = MenuAPI.CreatePauseMenuButton("Mod Settings")?
-                .SetColor(Color.cyan)
+                .SetColor(new Color(0.15f, 0.75f, 0.85f))
                 .ParentTo(parent)
                 .OnClick(() =>
                 {
                     UIInputHandler.SetSelectedObject(null);
-                    pauseOptionsMenu?.Close();
-                    myPage.Open();
+                    if (!isTitleScreen) pauseOptionsMenu?.Close();
+                    modSettingsPage.Open();
                 });
+
+            if (modSettingsButton != null && isTitleScreen)
+                modSettingsButton.SetPosition(new Vector2(-140, -210)).SetWidth(200);
+            
         }
 
         MenuAPI.AddElementToPauseMenu(builderDelegate);
+        MenuAPI.AddElementToMainMenu(builderDelegate);
     }
 
     internal static void Spam(string message)
