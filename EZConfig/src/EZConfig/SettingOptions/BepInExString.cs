@@ -12,6 +12,7 @@ public class BepInExString(string displayName, string category, string defaultVa
     Action<string>? saveCallback = null,
     Action<BepInExString>? onApply = null) : StringSetting, IExposedSetting
 {
+    public string PlaceholderText { get; set; } = defaultValue ?? "";
     private static GameObject? _settingUICell = null;
     public static GameObject? SettingUICell
     {
@@ -23,7 +24,7 @@ public class BepInExString(string displayName, string category, string defaultVa
                     return null;    
 
                 _settingUICell = Object.Instantiate(SingletonAsset<InputCellMapper>.Instance.FloatSettingCell);
-                _settingUICell.name = "BepInExIntCell";
+                _settingUICell.name = "BepInExStringCell";
 
                 var oldFloatSetting = _settingUICell.GetComponent<FloatSettingUI>();
                 var newStringSetting = _settingUICell.AddComponent<StringSettingUI>();
@@ -38,9 +39,14 @@ public class BepInExString(string displayName, string category, string defaultVa
                 inputRectTransform.offsetMin = new Vector2(20, -25);
                 inputRectTransform.offsetMax = new Vector2(380, 25);
 
-                var text = newStringSetting.inputField.GetComponentInChildren<TextMeshProUGUI>();
-                text.fontSize = text.fontSizeMin = text.fontSizeMax = 22;
-                text.alignment = TextAlignmentOptions.MidlineLeft;
+                var texts = newStringSetting.inputField.GetComponentsInChildren<TextMeshProUGUI>();
+                foreach (var text in texts)
+                {
+                    text.fontSize = text.fontSizeMin = text.fontSizeMax = 22;
+                    text.alignment = TextAlignmentOptions.MidlineLeft;
+                }
+
+                Object.DontDestroyOnLoad(_settingUICell);
             }
 
             return _settingUICell;
@@ -88,8 +94,14 @@ public class StringSettingUI : SettingInputUICell
             inputField.SetTextWithoutNotify(str);
             stringSetting.SetValue(str, settingHandler);
         }
+
+        var texts = inputField.GetComponentsInChildren<TextMeshProUGUI>();
+
+        foreach (var text in texts)
+            if (text.name == "Placeholder")
+                text.text = stringSetting.PlaceholderText;
     }
-    
+
     protected override void OnSettingChangedExternal(Setting setting)
     {
         base.OnSettingChangedExternal(setting);

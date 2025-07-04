@@ -12,8 +12,10 @@ public class BepInExHeader(string displayName, string category) : Setting, IExpo
         get
         {
             if (_settingUICell == null)
+            {
                 _settingUICell = new GameObject("BepInExHeaderCell", typeof(HeaderSettingUI));
-            
+                Object.DontDestroyOnLoad(_settingUICell);
+            }
             return _settingUICell;
         }
     }

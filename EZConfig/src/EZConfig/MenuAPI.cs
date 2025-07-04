@@ -9,11 +9,10 @@ namespace EZConfig
 {
     public static class MenuAPI
     {
-        internal static BuilderDelegate? pauseMenuBuilderDelegate;
+        internal static BuilderDelegate? pauseMenuBuilderDelegate, createPagesBuilderDelegate;
         public delegate void BuilderDelegate(Transform parent);
 
         public static void AddElementToPauseMenu(BuilderDelegate builderDelegate) => pauseMenuBuilderDelegate += builderDelegate;
-
 
         // Tabs 
         #region Tabs
@@ -80,32 +79,55 @@ namespace EZConfig
 
             SettingsHandler.Instance.AddSetting(new BepInExString(displayName, tabName, defaultValue, currentValue, saveCallback));
         }
+
+
+        public static void AddKeybindToTab(string displayName, KeyCode defaultValue, string tabName, KeyCode currentValue, Action<KeyCode>? saveCallback)
+        {
+            if (SettingsHandler.Instance == null)
+            {
+                Plugin.Log.LogError("You're registering options too early! Use the Start() function to create new options!");
+                return;
+            }
+
+            SettingsHandler.Instance.AddSetting(new BepInExKeyCode(displayName, tabName, defaultValue, currentValue, saveCallback));
+        }
         #endregion
 
 
-        internal static GameObject? pauseMenuButtonTemplate = null;
-        public static PauseMenuButton? CreatePauseMenuButton(string buttonName)
+        public static CustomPage CreatePage(string pageName)
         {
-            if (pauseMenuButtonTemplate == null)
-            {
-                var game = GameObject.Find("GAME");
-                if (game != null)
-                    pauseMenuButtonTemplate = Object.Instantiate(game.transform.Find("GUIManager/PauseCanvases/Canvas_Options/MainPage/Options/UI_MainMenuButton_Resume").gameObject);
+            var page = new GameObject(pageName, typeof(CustomPage));
 
-            }
-
-            if (pauseMenuButtonTemplate != null)
-            {
-                var clone = Object.Instantiate(pauseMenuButtonTemplate);
-                clone.name = $"UI_MainMenuButton_{buttonName}";
-
-                var newButton = clone.AddComponent<PauseMenuButton>();
-
-                newButton.SetText(buttonName);
-                return newButton;
-            }
-
-            return null;
+            return page.GetComponent<CustomPage>();
         }
+
+        public static PeakMenuButton? CreateMenuButton(string buttonName)
+        {
+            if (PeakTemplates.ButtonTemplate == null)
+            {
+                Plugin.ERROR("You're creating PauseMenuButton too early! Prefab hasn't been loaded yet.");
+
+                return null;
+            }
+
+            var clone = Object.Instantiate(PeakTemplates.ButtonTemplate);
+            clone.name = $"UI_MainMenuButton_{buttonName}";
+
+            var newButton = clone.AddComponent<PeakMenuButton>();
+
+            return newButton.SetText(buttonName);
+
+        }
+
+        public static PeakText CreateText(string displayText, string objectName = "UI_PeakText")
+        {
+            var gameObj = new GameObject(objectName, typeof(PeakText));
+
+            return gameObj.GetComponent<PeakText>().SetText(displayText);
+        }
+
+        public const float OPTIONS_WIDTH = 277f;
+        public static PeakMenuButton? CreatePauseMenuButton(string buttonName) => CreateMenuButton(buttonName)?.SetWidth(OPTIONS_WIDTH);
+        
     }
 }

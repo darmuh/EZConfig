@@ -24,7 +24,7 @@ public class BepInExInt(string displayName, string category, int defaultValue = 
 
                 _settingUICell = Object.Instantiate(SingletonAsset<InputCellMapper>.Instance.FloatSettingCell);
                 _settingUICell.name = "BepInExIntCell";
-
+  
                 var oldFloatSetting = _settingUICell.GetComponent<FloatSettingUI>();
                 var newIntSetting = _settingUICell.AddComponent<IntSettingUI>();
                 newIntSetting.inputField = oldFloatSetting.inputField;
@@ -37,6 +37,8 @@ public class BepInExInt(string displayName, string category, int defaultValue = 
                 inputRectTransform.pivot = new Vector2(0.5f, 0.5f);
                 inputRectTransform.offsetMin = new Vector2(20, -25);
                 inputRectTransform.offsetMax = new Vector2(380, 25);
+
+                Object.DontDestroyOnLoad(_settingUICell);
             }
 
             return _settingUICell;

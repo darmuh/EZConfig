@@ -60,6 +60,7 @@ internal static class Patching
                 target.gameObject.AddComponent<RectMask2D>();
                 var scrollRect = target.gameObject.AddComponent<ScrollRect>();
                 scrollRect.content = content.GetComponent<RectTransform>();
+                var sizeDelta = __instance.m_settingsContentParent.gameObject.GetComponent<RectTransform>().sizeDelta;
                 scrollRect.content.pivot = new Vector2(0.5f, 1f);
                 scrollRect.horizontal = false;
                 scrollRect.movementType = ScrollRect.MovementType.Clamped;
